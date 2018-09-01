@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基音周期估计面试的时候，京东的面试官问我项目中的基音周期估计是怎么做的，因为当时做项目的时候自己没有负责这一部分的理论研究，就没有答上来，感觉自己好low啊，回去就去补了点资料，顺道写个博客。 基音人在发音时，根据声带是否震动可以将语音信号分为清音跟浊音两种。 浊音又称有声语言，携带者语言中大部分的能量，浊音在时域上呈现出明显的周期性。 清音类似于白噪声，没有明显的周期性。 发浊音时，气流通过声门">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基音周期估计">
+<meta property="og:url" content="http://lb0621.tech/2018/09/01/基音周期估计/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="基音周期估计面试的时候，京东的面试官问我项目中的基音周期估计是怎么做的，因为当时做项目的时候自己没有负责这一部分的理论研究，就没有答上来，感觉自己好low啊，回去就去补了点资料，顺道写个博客。 基音人在发音时，根据声带是否震动可以将语音信号分为清音跟浊音两种。 浊音又称有声语言，携带者语言中大部分的能量，浊音在时域上呈现出明显的周期性。 清音类似于白噪声，没有明显的周期性。 发浊音时，气流通过声门">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?R(m)=\sum_{n=-\infty&space;}^{n=+\infty}&space;x(n)&space;x(n+m)">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?R_{n}(\tau&space;)=\sum_{m=0&space;}^{n-1-\tau}&space;\left&space;[&space;s(n+m)w(m)&space;\right&space;]&space;\left[&space;s(n+m+\tau)w(m+\tau)&space;\right&space;]">
+<meta property="og:image" content="https://latex.codecogs.com/gif.latex?E_{n}=\sum_{m=n-N+1&space;}^{n}&space;\left&space;[&space;x(m)w(n-m)&space;\right&space;]^{2}">
+<meta property="og:updated_time" content="2018-09-01T12:40:21.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基音周期估计">
+<meta name="twitter:description" content="基音周期估计面试的时候，京东的面试官问我项目中的基音周期估计是怎么做的，因为当时做项目的时候自己没有负责这一部分的理论研究，就没有答上来，感觉自己好low啊，回去就去补了点资料，顺道写个博客。 基音人在发音时，根据声带是否震动可以将语音信号分为清音跟浊音两种。 浊音又称有声语言，携带者语言中大部分的能量，浊音在时域上呈现出明显的周期性。 清音类似于白噪声，没有明显的周期性。 发浊音时，气流通过声门">
+<meta name="twitter:image" content="https://latex.codecogs.com/gif.latex?R(m)=\sum_{n=-\infty&space;}^{n=+\infty}&space;x(n)&space;x(n+m)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://lb0621.tech/2018/09/01/基音周期估计/"/>
+
+
+
+
+
+  <title>基音周期估计 | </title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title"></span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lb0621.tech/2018/09/01/基音周期估计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Li Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/blog-logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基音周期估计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-01T20:39:48+08:00">
+                2018-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基音周期估计"><a href="#基音周期估计" class="headerlink" title="基音周期估计"></a>基音周期估计</h1><p>面试的时候，京东的面试官问我项目中的基音周期估计是怎么做的，因为当时做项目的时候自己没有负责这一部分的理论研究，就没有答上来，感觉自己好low啊，回去就去补了点资料，顺道写个博客。</p>
+<h3 id="基音"><a href="#基音" class="headerlink" title="基音"></a>基音</h3><p>人在发音时，根据声带是否震动可以将语音信号分为<strong>清音</strong>跟<strong>浊音</strong>两种。</p>
+<p>浊音又称有声语言，携带者语言中大部分的能量，<strong>浊音在时域上呈现出明显的周期性</strong>。</p>
+<p><strong>清音类似于白噪声</strong>，没有明显的周期性。</p>
+<p>发浊音时，气流通过声门使声带产生张弛震荡式振动，产生准周期的激励脉冲串。这种声带振动的频率称为<strong>基音频率</strong>，相应的周期就成为<strong>基音周期</strong>。</p>
+<p>一般来说，男性说话者的基音频率较低，而女性说话者和小孩的基音频率相对较高。</p>
+<p>基音周期的估计称为<strong>基音检测</strong>，基音检测的最终<strong>目的是为了找出和声带振动频率完全一致或尽可能相吻合的轨迹曲线。</strong></p>
+<p>基因周期作为语音信号处理中描述激励源的重要参数之一，在语音合成、语音压缩编码、语音识别和说话人确认等领域都有着广泛而重要的问题，尤其对汉语更是如此。</p>
+<p>汉语是一种有调语言，而<strong>基因周期的变化称为声调</strong>，声调对于汉语语音的理解极为重要。因为在汉语的相互交谈中，不但要凭借不同的元音、辅音来辨别这些字词的意义，还需要从不同的声调来区别它，也就是说声调具有辨义作用；另外，汉语中存在着多音字现象，同一个字的不同的语气或不同的词义下具有不同的声调。因此准确可靠地进行基音检测对汉语语音信号的处理显得尤为重要。</p>
+<h3 id="基音周期估计的现有方法"><a href="#基音周期估计的现有方法" class="headerlink" title="基音周期估计的现有方法"></a>基音周期估计的现有方法</h3><ol>
+<li><p><strong>时域估计法</strong>，直接由语音波形来估计基音周期。</p>
+<pre><code>自相关法、并行处理法、平均幅度差法、数据减少法等
+</code></pre></li>
+<li><p><strong>变换法</strong>，它是一种将语音信号变换到频域或者时域来估计基音周期的方法，首先利用同态分析方法将声道的影响消除，得到属于激励部分的信息，然后求取基音周期。</p>
+<pre><code>最常用的就是倒谱法，这种方法的缺点就是算法比较复杂，但是基音估计的效果却很好
+</code></pre></li>
+<li><p><strong>混合法</strong>，先提取信号声道模型参数，然后利用它对信号进行滤波，得到音源序列，最后再利用自相关法或者平均幅度差法求得基因音周期。</p>
+</li>
+</ol>
+<h3 id="基于自相关的基音周期检测"><a href="#基于自相关的基音周期检测" class="headerlink" title="基于自相关的基音周期检测"></a>基于自相关的基音周期检测</h3><ul>
+<li><h5 id="自相关函数"><a href="#自相关函数" class="headerlink" title="自相关函数"></a>自相关函数</h5><p>  能量有限的语音信号x(n)的短时自相关函数定义为</p>
+<p>  <a href="https://www.codecogs.com/eqnedit.php?latex=R(m)=\sum_{n=-\infty&space;}^{n=&plus;\infty}&space;x(n)&space;x(n&plus;m)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?R(m)=\sum_{n=-\infty&space;}^{n=&plus;\infty}&space;x(n)&space;x(n&plus;m)" title="R(m)=\sum_{n=-\infty }^{n=+\infty} x(n) x(n+m)"></a></p>
+<p>  此公式表示一个信号和延迟m点后该信号本身的相似性。如果信号x(n)具有周期性，那么它的自相关函数也具有周期性，而且周期与信号x(n)的周期性相同。</p>
+<p>  自相关函数提供了一种获取周期信号周期的方法。在周期信号周期的整数倍上，它的自相关函数可以达到最大值，因此可以不考虑起始时间，而从自相关函数的第一个最大值的位置估计出信号的基音周期，这使自相关函数成为信号基音周期估计的一种工具。</p>
+</li>
+<li><h5 id="短时自相关函数法"><a href="#短时自相关函数法" class="headerlink" title="短时自相关函数法"></a>短时自相关函数法</h5><p>  语音信号是非稳态信号它的特征是随时间变化的，但在一个很短的时间段内可以认为具有相对稳定的特征即短时平稳性。因此语音具有短时自相关性。这个时间段约5ms-50ms。为其统计特性和频谱特性都是对短时段而言的。这使得要对语音信号作数字处理必须先按短时段对语音信号分帧。这样每一帧信号都具有短时平稳性从而进行短时相关分析。</p>
+<p>  能量有限的语音信号s(n)的短时自相关函数定义为</p>
+<p>  <img src="https://latex.codecogs.com/gif.latex?R_{n}(\tau&space;)=\sum_{m=0&space;}^{n-1-\tau}&space;\left&space;[&space;s(n&plus;m)w(m)&space;\right&space;]&space;\left[&space;s(n&plus;m&plus;\tau)w(m&plus;\tau)&space;\right&space;]" title="R_{n}(\tau )=\sum_{m=0 }^{n-1-\tau} \left [ s(n+m)w(m) \right ] \left[ s(n+m+\tau)w(m+\tau) \right ]"></p>
+<p>  一般要求一帧至少包含 2 个以上的周期。一般，基频最低 50Hz，故周期最长为 20ms。而且相邻帧之间要有足够的重叠。具体应用时，窗口长度根据采样率确定帧长。</p>
+</li>
+</ul>
+<h3 id="基于自相关的基音周期检测算法实现"><a href="#基于自相关的基音周期检测算法实现" class="headerlink" title="基于自相关的基音周期检测算法实现"></a>基于自相关的基音周期检测算法实现</h3><ol>
+<li><p>先要确定帧长 &lt;– 考虑所包含的周期数</p>
+</li>
+<li><p>通过计算短时能量区分 voice 和 unvoice</p>
+<p> 语音信号{x(n)}的某帧信号的短时平均能量En的定义为</p>
+<p> <img src="https://latex.codecogs.com/gif.latex?E_{n}=\sum_{m=n-N&plus;1&space;}^{n}&space;\left&space;[&space;x(m)w(n-m)&space;\right&space;]^{2}" title="E_{n}=\sum_{m=n-N+1 }^{n} \left [ x(m)w(n-m) \right ]^{2}"></p>
+<p> 语音中浊音段的短时平均能量远远大于清音段的短时平均能量。因此，短时平均能量的计算给出了区分清音段与浊音段的依据，即En(浊)&gt;En(清)。</p>
+</li>
+<li><p>图中计算该语音的所有帧对应的基音周期的点，由图可以看出存在不少的野点。因为，需要对此进行进一步的处理，即去除野点。这里通过中值滤波来除去野点。</p>
+</li>
+</ol>
+<p>参考文献：<br><a href="http://blog.csdn.net/zouxy09/article/details/9141875" target="_blank" rel="noopener">http://blog.csdn.net/zouxy09/article/details/9141875</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/02/语音特征参数MFCC提取/" rel="next" title="语音特征参数MFCC提取">
+                <i class="fa fa-chevron-left"></i> 语音特征参数MFCC提取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/blog-logo.jpg"
+                alt="Li Bin" />
+            
+              <p class="site-author-name" itemprop="name">Li Bin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/lb0621" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:lb0621@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基音周期估计"><span class="nav-number">1.</span> <span class="nav-text">基音周期估计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基音"><span class="nav-number">1.0.1.</span> <span class="nav-text">基音</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基音周期估计的现有方法"><span class="nav-number">1.0.2.</span> <span class="nav-text">基音周期估计的现有方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于自相关的基音周期检测"><span class="nav-number">1.0.3.</span> <span class="nav-text">基于自相关的基音周期检测</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#自相关函数"><span class="nav-number">1.0.3.0.1.</span> <span class="nav-text">自相关函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#短时自相关函数法"><span class="nav-number">1.0.3.0.2.</span> <span class="nav-text">短时自相关函数法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于自相关的基音周期检测算法实现"><span class="nav-number">1.0.4.</span> <span class="nav-text">基于自相关的基音周期检测算法实现</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lb0621</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
