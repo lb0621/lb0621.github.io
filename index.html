@@ -259,6 +259,164 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lb0621.tech/2018/09/01/音频文件格式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Li Bin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/blog-logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/01/音频文件格式/" itemprop="url">音频文件格式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-01T20:49:47+08:00">
+                2018-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="音频文件介绍"><a href="#音频文件介绍" class="headerlink" title="音频文件介绍"></a>音频文件介绍</h1><h2 id="音频格式"><a href="#音频格式" class="headerlink" title="音频格式"></a>音频格式</h2><p>音频的存储格式有 <code>wav, mp2, mp3, wma, pcm</code> 等.</p>
+<p>pcm 是最原始的存储格式.</p>
+<p>PCM（Pulse Code Modulation –&gt; 脉冲编码调制)是一种编码方式, 将声音等模拟信号变成符号化的脉冲序列, 再予以记录.</p>
+<p>在 pcm 上加些头文件就得到 wav 文件, 所以有时候可以把 pcm 和 wav 等价起来.</p>
+<p>pcm 是一堆二进制的数字, 包含冗余信息, 可以进行压缩, 使存储的代价变小, 同时音质不受很大影响, 毕竟我们人耳能感受的频率是很小的.</p>
+<p>mp2, mp3, wma 都是压缩格式.</p>
+<h2 id="读取音频"><a href="#读取音频" class="headerlink" title="读取音频"></a>读取音频</h2><p>matlab 里读取音频 wav 文件, 可以用 readwav 函数.</p>
+<pre><code>&gt;&gt;&gt; `help(readwav)`
+</code></pre><blockquote>
+<p>需要安装<a href="https://github.com/luanxxys/env/blob/master/voicebox.md" target="_blank" rel="noopener">voicebox 工具箱</a></p>
+</blockquote>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">y = readwav(<span class="string">'1.wav'</span>);</span><br><span class="line">[y fs] = readwav(<span class="string">'1.wav'</span>);</span><br><span class="line">[y fs nbits] = readwav(<span class="string">'1.wav'</span>);</span><br></pre></td></tr></table></figure>
+<p>这三种方式, y 是读取的音频数据, fs 是采样率, nbits 是采样位数.</p>
+<p>如果音频是单通道, 则 y 是一个列向量. 如果是双通道, 是2个列向量.</p>
+<p>fs 的值一般有 8000, 16000, 22050, 44100, 48000 等.</p>
+<p>nbits 是 8 或者 16.</p>
+<p>我们可以这个算出音频的时间, 就是 y 的长度 length(y) 除以 fs.</p>
+<p>y 的值在 -1~1 之间, 相当与已经归一化了. 如果是双通道, 取第一列就是左声道的数据, 第二列就是右声道的数据.</p>
+<h3 id="matlab-操作"><a href="#matlab-操作" class="headerlink" title="matlab 操作"></a>matlab 操作</h3><pre><code>[y fs nbits opts] = readwav(&apos;1.wav&apos;);
+&gt;&gt; opts.fmt
+
+    ans =
+
+             wFormatTag: 1
+              nChannels: 1
+         nSamplesPerSec: 22050
+        nAvgBytesPerSec: 22050
+            nBlockAlign: 1
+         nBitsPerSample: 8
+</code></pre><p>各个变量代表的意义</p>
+<ol>
+<li>wFormatTag is the format tag of the wave file.</li>
+<li>nChannels is the number of channels.</li>
+<li>nSamplePerSec is the number of samples per second, which is equal to the samping rate 22050.</li>
+<li>nAveBytesPerSec is the number of bytes per second. ( 22050*1= 22050).</li>
+<li>nBlockAlign is equal to the rato between nAveBytesPerSec and nSamplePerSec.</li>
+<li>nBitsPerSample is the bit resolution.</li>
+</ol>
+<p>参考文献：<br><a href="http://blog.csdn.net/wbgxx333/article/details/11395371" target="_blank" rel="noopener">http://blog.csdn.net/wbgxx333/article/details/11395371</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lb0621.tech/2018/09/01/基音周期估计/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -992,7 +1150,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
